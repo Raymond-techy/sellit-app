@@ -36,17 +36,16 @@ export default function ChatScreen() {
   const messageID = user.ref + auth.currentUser.uid;
   const sorted = messageID.split("").sort().join("");
 
-  const getMessages = () => {
-    const unsub = () => {
-      onSnapshot(doc(db, "messages", sorted), (doc) => {
-        doc.exists() && setChats(doc.data().messages);
-        console.log("Current data: ", doc.data());
-      });
-    };
-    unsub();
-    console.log(chats, "type of chats");
-  };
   useEffect(() => {
+    const getMessages = () => {
+      const unsub = () => {
+        onSnapshot(doc(db, "messages", sorted), (doc) => {
+          doc.exists() && setChats(doc.data().messages);
+        });
+      };
+      unsub();
+      console.log(chats, "type of chats");
+    };
     getMessages();
     navigation.getParent()?.setOptions({
       tabBarStyle: { display: "none" },
@@ -56,7 +55,7 @@ export default function ChatScreen() {
       navigation
         .getParent()
         ?.setOptions({ tabBarStyle: undefined, tabBarVisible: undefined });
-  }, [navigation]);
+  }, [navigation, sorted]);
 
   const handleSendMessage = async () => {
     if (message.length !== 0) {

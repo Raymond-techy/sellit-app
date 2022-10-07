@@ -7,28 +7,36 @@ import Card from "../Components/Card";
 import Screen from "../Components/Screen";
 
 import listingApi from "../Firebase/Api";
+import AppButton from "../Components/AppButton";
+import Colors from "../config/Colors";
 
 function Listings() {
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refresh, setRefresh] = useState(false);
+  const [error, setError] = useState(false);
   useEffect(() => {
     loadListings();
   }, []);
   const loadListings = async () => {
-    try {
-      setLoading(true);
-      const items = await listingApi.fetchListings();
-      setListings(items);
+    setLoading(true);
+    const items = await listingApi.fetchListings().catch((err) => {
+      setError(true);
       setLoading(false);
-    } catch (error) {
-      console.log(error, "An error occured");
-    }
+    });
+    setListings(items);
+    setLoading(false);
   };
 
   const navigation = useNavigation();
   return (
     <Screen>
+      {error && (
+        <View>
+          <Text style={styles.text}>Couldn't fetch Listings</Text>
+          <AppButton handlePress={loadListings} title="Retry" />
+        </View>
+      )}
       <ActivityIndicator visible={loading} />
       <View style={styles.listings}>
         <FlatList
@@ -59,6 +67,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#f8f4f4",
     paddingHorizontal: 20,
     // paddingTop: 30,
+  },
+  text: {
+    color: Colors.danger,
+    fontSize: 20,
+    fontWeight: "bold",
   },
 });
 export default Listings;
