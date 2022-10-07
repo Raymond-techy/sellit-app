@@ -6,7 +6,6 @@ import Screen from "../Components/Screen";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { getAuth } from "firebase/auth";
 import listingApi from "../Firebase/Api";
-import { useNavigation } from "@react-navigation/native";
 
 function ListingDetails({ route, navigation }) {
   const [seller, setSeller] = useState(null);
@@ -19,13 +18,12 @@ function ListingDetails({ route, navigation }) {
       setSeller(user);
     };
     getSeller();
-  }, [listing.sellerRef]);
+  }, [listing.sellerRef, listing.sellerRef]);
 
   const [selectedImage, setSelectedImage] = useState(listing.images[0]);
   const handleSelect = (imgSrc) => {
     setSelectedImage(imgSrc);
   };
-  // const navigation = useNavigation();
   return (
     <Screen>
       <View style={styles.listingDet}>
@@ -72,7 +70,9 @@ function ListingDetails({ route, navigation }) {
             subtitle="Product owner"
           />
         ) : (
-          <Text>You Own This Product</Text>
+          auth.currentUser.uid === listing.sellerRef && (
+            <Text>You Own This Product</Text>
+          )
         )}
       </View>
     </Screen>
