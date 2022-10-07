@@ -1,4 +1,10 @@
-import { StyleSheet, Text, TouchableHighlight, View } from "react-native";
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableHighlight,
+  View,
+} from "react-native";
 import React, { useState, useEffect } from "react";
 import moment from "moment";
 import Screen from "../Components/Screen";
@@ -18,6 +24,7 @@ import {
   Timestamp,
   updateDoc,
 } from "firebase/firestore";
+import uuid from "react-native-uuid";
 import { db } from "../../firebase.config";
 export default function ChatScreen() {
   const navigation = useNavigation();
@@ -32,7 +39,7 @@ export default function ChatScreen() {
   const getMessages = () => {
     const unsub = () => {
       onSnapshot(doc(db, "messages", sorted), (doc) => {
-        setChats(Object.entries(doc.data()));
+        doc.exists() && setChats(doc.data().messages);
         console.log("Current data: ", doc.data());
       });
     };
@@ -53,6 +60,7 @@ export default function ChatScreen() {
 
   const handleSendMessage = async () => {
     if (message.length !== 0) {
+      setMessage("");
       const docRef = doc(db, "messages", sorted);
       const formData = {
         message,
@@ -70,7 +78,6 @@ export default function ChatScreen() {
         delete formDataCopy.message;
         await setDoc(doc(db, "messages", sorted), formDataCopy);
       }
-      setMessage("");
     } else {
       return;
     }
@@ -88,13 +95,21 @@ export default function ChatScreen() {
           />
         </View>
       </View>
-      <View>
+      <ScrollView>
         {chats.map((chat) => (
-          <View key={chat.receiverId}>
-            <Text>{chat.senderId}</Text>
+          <View key={uuid.v4()}>
+            <Text
+              style={
+                chat.senderId === auth.currentUser.uid
+                  ? styles.sent
+                  : styles.received
+              }
+            >
+              {chat.message}
+            </Text>
           </View>
         ))}
-      </View>
+      </ScrollView>
       <View style={styles.message}>
         <AppTextInput
           style={styles.input}
@@ -122,6 +137,7 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 87,
     backgroundColor: Colors.primary,
+    zIndex: 10,
   },
   message: {
     flex: 1,
@@ -141,5 +157,11 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 35,
     justifyContent: "center",
+  },
+  received: {
+    backgroundColor: Colors.primary,
+  },
+  sent: {
+    backgroundColor: Colors.secondary,
   },
 });

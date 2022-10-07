@@ -138,8 +138,9 @@ const getMessages = async () => {
   }
 };
 const storeImage = async (image_url) => {
+  const auth = getAuth();
   return new Promise(async (resolve, reject) => {
-    const fileName = `${uuid.v4()}`;
+    const fileName = `${auth.currentUser.uid}-${uuid.v4()}-${image_url}`;
     const storageRef = ref(getStorage(), "images/" + fileName);
     // const storageRef = ref(getStorage(), "image_name");
 

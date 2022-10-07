@@ -71,7 +71,9 @@ function ListingDetails({ route, navigation }) {
             }
             subtitle="Product owner"
           />
-        ) : null}
+        ) : (
+          <Text>You Own This Product</Text>
+        )}
       </View>
     </Screen>
   );
