@@ -1,16 +1,8 @@
-import {
-  Button,
-  Image,
-  Modal,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { Image, ScrollView, StyleSheet, View } from "react-native";
 import React, { useState } from "react";
 import { Formik } from "formik";
-
 import * as Yup from "yup";
+
 import AppFormFIeld from "../Components/AppFormFIeld";
 import SubmitButton from "../Components/SubmitButton";
 import AppFormPicker from "../Components/AppFormPicker";
@@ -110,16 +102,12 @@ export default function ListingEditScreen() {
     navigation.navigate("Home");
   };
 
-  if (loading)
-    return (
+  return (
+    <Screen>
       <ActivityIndicator
         visible={loading}
         source={require("../assets/animations/loader.json")}
       />
-    );
-
-  return (
-    <Screen>
       <ActivityIndicator
         visible={complete}
         source={require("../assets/animations/done.json")}

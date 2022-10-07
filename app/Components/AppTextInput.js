@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
     // marginLeft: "auto",
   },
   icon: {
-    marginHorizontal: 12,
+    // marginHorizontal: 12,
     marginTop: 4,
   },
   TextInput: {
@@ -51,6 +51,6 @@ const styles = StyleSheet.create({
     color: Colors.dark_g,
     fontSize: 16,
     fontFamily: Platform.OS === "ios" ? "avenir" : "Roboto",
-    paddingLeft: 10,
+    paddingLeft: 6,
   },
 });

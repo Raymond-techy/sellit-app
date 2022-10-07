@@ -12,11 +12,7 @@ function AccountNavigator() {
         options={{ headerTitle: "Account" }}
         component={AccountScreen}
       />
-      <Stack.Screen
-        name="messages"
-        component={MessagesScreen}
-        options={{ title: "MY LISTINGS" }}
-      />
+
       <Stack.Screen
         name="myListings"
         component={MyLIstings}

@@ -8,9 +8,7 @@ import FeedNavigator from "./FeedNavigator";
 import AccountNavigator from "./AccountNavigator";
 import ListingEditScreen from "../Screens/ListingEditScreen";
 import NewListingButton from "./NewListingButton";
-import LoginScreen from "../Screens/LoginScreen";
-import TestImagePicker from "../Firebase/test";
-import ChatScreen from "../Screens/ChatScreen";
+import MessageNavigator from "./MessageNavigator";
 
 function AppNavigator() {
   const Tab = createBottomTabNavigator();
@@ -46,8 +44,8 @@ function AppNavigator() {
         })}
       />
       <Tab.Screen
-        name="Chat"
-        component={ChatScreen}
+        name="messaging"
+        component={MessageNavigator}
         options={{
           headerShown: false,
           tabBarIcon: ({ color, size }) => (

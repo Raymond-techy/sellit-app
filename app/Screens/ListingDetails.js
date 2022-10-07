@@ -6,8 +6,9 @@ import Screen from "../Components/Screen";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { getAuth } from "firebase/auth";
 import listingApi from "../Firebase/Api";
+import { useNavigation } from "@react-navigation/native";
 
-function ListingDetails({ route }) {
+function ListingDetails({ route, navigation }) {
   const [seller, setSeller] = useState(null);
   const { listing } = route.params;
   const auth = getAuth();
@@ -24,6 +25,7 @@ function ListingDetails({ route }) {
   const handleSelect = (imgSrc) => {
     setSelectedImage(imgSrc);
   };
+  // const navigation = useNavigation();
   return (
     <Screen>
       <View style={styles.listingDet}>
@@ -57,7 +59,16 @@ function ListingDetails({ route }) {
           <ListItem
             title={seller.name}
             imgURL={seller.imgurl}
-            // imgSrc={require("../assets/mosh(4).jpg")}
+            handlePress={() =>
+              navigation.navigate("messaging", {
+                screen: "Chat",
+                params: {
+                  name: seller.name,
+                  imgurl: seller.imgurl,
+                  ref: listing.sellerRef,
+                },
+              })
+            }
             subtitle="Product owner"
           />
         ) : null}
