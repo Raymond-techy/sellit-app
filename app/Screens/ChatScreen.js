@@ -94,7 +94,7 @@ export default function ChatScreen() {
           />
         </View>
       </View>
-      <ScrollView>
+      <ScrollView style={styles.chats}>
         {chats.map((chat) => (
           <View key={uuid.v4()}>
             <Text
@@ -147,6 +147,9 @@ const styles = StyleSheet.create({
     bottom: 0,
     width: "100%",
     backgroundColor: Colors.white,
+  },
+  chats: {
+    paddingTop: 156,
   },
   input: {
     marginRight: 5,

@@ -21,6 +21,7 @@ function Listings() {
   const loadListings = async () => {
     setLoading(true);
     const items = await listingApi.fetchListings().catch((err) => {
+      console.log(err, "from listings");
       setError(true);
       setLoading(false);
     });
