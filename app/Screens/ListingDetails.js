@@ -111,6 +111,9 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 300,
   },
+  listingDet: {
+    flex: 1,
+  },
 });
 
 export default ListingDetails;

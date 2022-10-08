@@ -1,11 +1,5 @@
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableHighlight,
-  View,
-} from "react-native";
-import React, { useState, useEffect } from "react";
+import { ScrollView, StyleSheet, TouchableHighlight, View } from "react-native";
+import React, { useRef, useState, useEffect } from "react";
 import moment from "moment";
 import Screen from "../Components/Screen";
 import ListItem from "../Components/ListItem";
@@ -19,13 +13,13 @@ import {
   doc,
   getDoc,
   onSnapshot,
-  serverTimestamp,
   setDoc,
   Timestamp,
   updateDoc,
 } from "firebase/firestore";
 import uuid from "react-native-uuid";
 import { db } from "../../firebase.config";
+import Message from "../Components/Message";
 export default function ChatScreen() {
   const navigation = useNavigation();
   const route = useRoute();
@@ -81,7 +75,7 @@ export default function ChatScreen() {
       return;
     }
   };
-
+  const scroll = useRef();
   return (
     <Screen>
       <View style={styles.ChatScreen}>
@@ -94,18 +88,21 @@ export default function ChatScreen() {
           />
         </View>
       </View>
-      <ScrollView style={styles.chats}>
+      <ScrollView
+        style={styles.chats}
+        ref={scroll}
+        onContentSizeChange={() => scroll.current.scrollToEnd()}
+      >
         {chats.map((chat) => (
           <View key={uuid.v4()}>
-            <Text
+            <Message
               style={
-                chat.senderId === auth.currentUser.uid
+                auth.currentUser.uid === chat.senderId
                   ? styles.sent
                   : styles.received
               }
-            >
-              {chat.message}
-            </Text>
+              text={chat.message}
+            />
           </View>
         ))}
       </ScrollView>
@@ -146,24 +143,30 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 0,
     width: "100%",
-    backgroundColor: Colors.white,
+    position: "absolute",
   },
   chats: {
-    paddingTop: 156,
+    flex: 1,
+    width: "100%",
+    height: "100%",
+    marginTop: 50,
+    marginBottom: 50,
+    zIndex: 1,
   },
   input: {
     marginRight: 5,
     width: "80%",
   },
   send: {
-    padding: 15,
-    borderRadius: 35,
-    justifyContent: "center",
+    // backgroundColor: Colors.light,
+    alignSelf: "center",
   },
   received: {
     backgroundColor: Colors.primary,
+    alignSelf: "flex-start",
   },
   sent: {
     backgroundColor: Colors.secondary,
+    alignSelf: "flex-end",
   },
 });

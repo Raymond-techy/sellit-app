@@ -41,8 +41,8 @@ export default function ImagePicker({ handleDelete, handleAdd }) {
       <ScrollView
         scrollEnabled
         showsHorizontalScrollIndicator={false}
-        ref={scrollView}
         horizontal
+        ref={scrollView}
         onContentSizeChange={() => scrollView.current.scrollToEnd()}
       >
         <View style={{ flexDirection: "row" }}>
