@@ -12,7 +12,8 @@ export default function Message({ text, style }) {
 
 const styles = StyleSheet.create({
   message: {
-    width: 150,
+    maxWidth: 150,
+    minWidth: 60,
     height: "auto",
     borderRadius: 10,
     marginBottom: 15,

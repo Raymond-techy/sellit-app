@@ -23,19 +23,22 @@ export default function RegisterScreen() {
   const navigation = useNavigation();
   const { setUser } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
-  const handleSubmit = (values) => {
+  const handleSubmit = async (values) => {
     setLoading(true);
     const { name, email, password, imgurl } = values;
-    const user = AuthApi.createUser(name, email, password, imgurl[0].uri).catch(
-      (err) => {
-        setLoading(false);
-        if (err === "auth/email-already-in-use") {
-          Toast.error("email already exist");
-        }
-        Toast.error("Error with information upload");
-        return;
+    const user = await AuthApi.createUser(
+      name,
+      email,
+      password,
+      imgurl[0].uri
+    ).catch((err) => {
+      setLoading(false);
+      if (err === "auth/email-already-in-use") {
+        Toast.error("email already exist");
       }
-    );
+      Toast.error("Error with information upload");
+      return;
+    });
     setLoading(false);
     setUser(user);
   };

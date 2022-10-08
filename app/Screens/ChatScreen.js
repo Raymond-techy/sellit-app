@@ -1,4 +1,11 @@
-import { ScrollView, StyleSheet, TouchableHighlight, View } from "react-native";
+import {
+  ScrollView,
+  StyleSheet,
+  TouchableHighlight,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
+} from "react-native";
 import React, { useRef, useState, useEffect } from "react";
 import moment from "moment";
 import Screen from "../Components/Screen";
@@ -9,6 +16,7 @@ import { Octicons } from "@expo/vector-icons";
 import AppTextInput from "../Components/AppTextInput";
 import { getAuth } from "firebase/auth";
 import {
+  arrayRemove,
   arrayUnion,
   doc,
   getDoc,
@@ -52,7 +60,7 @@ export default function ChatScreen() {
   }, [navigation, sorted]);
 
   const handleSendMessage = async () => {
-    if (message.length !== 0) {
+    if (message.trim().length !== 0) {
       setMessage("");
       const docRef = doc(db, "messages", sorted);
       const formData = {
@@ -60,17 +68,37 @@ export default function ChatScreen() {
         receiverId: user.ref,
         senderId: auth.currentUser.uid,
         timestamp: Timestamp.now(),
+        lastMessage: message,
       };
       const get = await getDoc(docRef);
       if (get.exists()) {
+        delete formData.lastMessage;
         await updateDoc(docRef, {
           messages: arrayUnion(formData),
         });
       } else {
-        const formDataCopy = { ...formData, messages: [{ ...formData }] };
+        const formDataCopy = {
+          ...formData,
+          messages: [{ ...formData }],
+          senderDetails: {
+            name: auth.currentUser.displayName,
+            img: auth.currentUser.photoURL,
+            ref: auth.currentUser.uid,
+          },
+          receiverDetails: {
+            name: user.name,
+            img: user.imgurl,
+            ref: user.ref,
+          },
+        };
         delete formDataCopy.message;
-        await setDoc(doc(db, "messages", sorted), formDataCopy);
+        await setDoc(docRef, formDataCopy);
       }
+
+      await updateDoc(docRef, {
+        lastMessage: message,
+        timestamp: Timestamp.now(),
+      });
     } else {
       return;
     }
@@ -95,14 +123,16 @@ export default function ChatScreen() {
       >
         {chats.map((chat) => (
           <View key={uuid.v4()}>
-            <Message
-              style={
-                auth.currentUser.uid === chat.senderId
-                  ? styles.sent
-                  : styles.received
-              }
-              text={chat.message}
-            />
+            <TouchableOpacity>
+              <Message
+                style={
+                  auth.currentUser.uid === chat.senderId
+                    ? styles.sent
+                    : styles.received
+                }
+                text={chat.message}
+              />
+            </TouchableOpacity>
           </View>
         ))}
       </ScrollView>
@@ -149,9 +179,10 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
     height: "100%",
-    marginTop: 50,
+    marginTop: 90,
     marginBottom: 50,
     zIndex: 1,
+    paddingHorizontal: 15,
   },
   input: {
     marginRight: 5,
