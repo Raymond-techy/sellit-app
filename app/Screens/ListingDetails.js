@@ -11,11 +11,16 @@ function ListingDetails({ route, navigation }) {
   const [seller, setSeller] = useState(null);
   const { listing } = route.params;
   const auth = getAuth();
+  const [others, setOthers] = useState([]);
   useEffect(() => {
     const getSeller = async () => {
       const user = await listingApi.getUser(listing.sellerRef);
-      console.log(user);
       setSeller(user);
+    };
+    const getMore = async () => {
+      const otherPro = await listingApi.getUser(listing.sellerRef);
+      console.log(otherPro);
+      setOthers(otherPro);
     };
     getSeller();
   }, [listing.sellerRef, listing.sellerRef]);
