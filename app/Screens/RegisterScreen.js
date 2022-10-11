@@ -1,17 +1,19 @@
-import { StyleSheet, Text, View } from "react-native";
-import React, { useContext, useState } from "react";
+import React, { useEffect, useContext, useState } from "react";
+import { StyleSheet, Text, View, TouchableWithoutFeedback } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import * as Notifications from "expo-notifications";
 import { Formik } from "formik";
 import * as Yup from "yup";
-import AppFormFIeld from "../Components/AppFormFIeld";
+
 import SubmitButton from "../Components/SubmitButton";
 import Screen from "../Components/Screen";
+import AppFormFIeld from "../Components/AppFormFIeld";
 import AuthApi from "../Firebase/AuthApi";
 import ImageFormPicker from "../Components/ImageFormPicker";
 import Container, { Toast } from "toastify-react-native";
 import ActivityIndicator from "../Components/ActivityIndicator";
 import AuthContext from "../Context/AuthContext";
-import { TouchableWithoutFeedback } from "react-native-gesture-handler";
-import { useNavigation } from "@react-navigation/native";
+
 const validationSchema = Yup.object().shape({
   email: Yup.string().email().required().label("Email"),
   password: Yup.string().required().min(6).label("Password"),
@@ -23,6 +25,20 @@ export default function RegisterScreen() {
   const navigation = useNavigation();
   const { setUser } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    regForPushNot();
+  }, []);
+
+  const regForPushNot = async () => {
+    const requestPermission = await Notifications.getPermissionsAsync();
+    if (!requestPermission.granted) return;
+    try {
+      const token = await Notifications.getExpoPushTokenAsync();
+      console.log(token);
+    } catch (error) {
+      console.log("error getting a push token", error);
+    }
+  };
   const handleSubmit = async (values) => {
     setLoading(true);
     const { name, email, password, imgurl } = values;

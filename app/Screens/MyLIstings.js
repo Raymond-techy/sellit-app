@@ -23,27 +23,29 @@ export default function MyLIstings({ navigation }) {
 
   return (
     <Screen>
-      <View style={styles.listings}>
-        <Text style={styles.header}>My Listings</Text>
-        <ActivityIndicator visible={loading} />
-        <FlatList
-          refreshing={refresh}
-          onRefresh={() => loadMyListings()}
-          showsVerticalScrollIndicator={false}
-          data={myListings}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item: { id, data } }) => (
-            <Card
-              title={data.title}
-              subTitle={"$" + data.price}
-              image={data.images[0]}
-              onPress={() =>
-                navigation.navigate("listingDetails", { listing: data })
-              }
-            />
-          )}
-        />
-      </View>
+      {myListings && (
+        <View style={styles.listings}>
+          <Text style={styles.header}>My Listings</Text>
+          <ActivityIndicator visible={loading} />
+          <FlatList
+            refreshing={refresh}
+            onRefresh={() => loadMyListings()}
+            showsVerticalScrollIndicator={false}
+            data={myListings}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={({ item: { id, data } }) => (
+              <Card
+                title={data.title}
+                subTitle={"$" + data.price}
+                image={data.images[0]}
+                onPress={() =>
+                  navigation.navigate("listingDetails", { listing: data })
+                }
+              />
+            )}
+          />
+        </View>
+      )}
     </Screen>
   );
 }

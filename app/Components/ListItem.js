@@ -10,9 +10,13 @@ import {
   View,
   StyleSheet,
   TouchableHighlight,
+  Button,
 } from "react-native";
 import Colors from "../config/Colors";
 function ListItem({
+  style,
+  chatSeller,
+  chatBtn = false,
   chevron = true,
   imgURL,
   title,
@@ -26,7 +30,7 @@ function ListItem({
     <GestureHandlerRootView>
       <Swipeable renderRightActions={renderRightActions}>
         <TouchableHighlight onPress={handlePress} underlayColor={Colors.medium}>
-          <View style={styles.container}>
+          <View style={[styles.container, style]}>
             {IconComponent}
             {imgSrc ? <Image style={styles.image} source={imgSrc} /> : null}
             {imgURL ? (
@@ -49,6 +53,7 @@ function ListItem({
                 size={25}
               />
             )}
+            {chatBtn && <Button title="Chat Seller" onPress={chatSeller} />}
           </View>
         </TouchableHighlight>
       </Swipeable>

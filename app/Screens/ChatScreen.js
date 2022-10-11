@@ -119,7 +119,9 @@ export default function ChatScreen() {
       <ScrollView
         style={styles.chats}
         ref={scroll}
-        onContentSizeChange={() => scroll.current.scrollToEnd()}
+        onContentSizeChange={() =>
+          scroll.current.scrollToEnd({ animated: true })
+        }
       >
         {chats.map((chat) => (
           <View key={uuid.v4()}>
@@ -189,15 +191,14 @@ const styles = StyleSheet.create({
     width: "80%",
   },
   send: {
-    // backgroundColor: Colors.light,
     alignSelf: "center",
   },
   received: {
-    backgroundColor: Colors.primary,
+    backgroundColor: Colors.secondary,
     alignSelf: "flex-start",
   },
   sent: {
-    backgroundColor: Colors.secondary,
+    backgroundColor: Colors.light,
     alignSelf: "flex-end",
   },
 });

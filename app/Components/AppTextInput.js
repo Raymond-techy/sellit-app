@@ -33,6 +33,7 @@ export default function AppTextInput({
 const styles = StyleSheet.create({
   container: {
     width: "100%",
+    borderWidth: 1,
     backgroundColor: Colors.light,
     borderRadius: 25,
     borderColor: Colors.light,

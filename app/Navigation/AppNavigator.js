@@ -9,6 +9,7 @@ import AccountNavigator from "./AccountNavigator";
 import ListingEditScreen from "../Screens/ListingEditScreen";
 import NewListingButton from "./NewListingButton";
 import MessageNavigator from "./MessageNavigator";
+import WishList from "../Screens/WishList";
 
 function AppNavigator() {
   const Tab = createBottomTabNavigator();
@@ -17,11 +18,25 @@ function AppNavigator() {
       screenOptions={{ tabBarHideOnKeyboard: true, headerShown: false }}
     >
       <Tab.Screen
-        name="Feed"
+        name="Explore"
         component={FeedNavigator}
         options={{
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons name="home" color={color} size={size} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="wishlist"
+        component={WishList}
+        options={{
+          headerShown: false,
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons
+              name="heart-multiple-outline"
+              color={color}
+              size={size}
+            />
           ),
         }}
       />

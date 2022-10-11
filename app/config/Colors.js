@@ -1,6 +1,3 @@
-import { useState } from "react";
-import { StyleSheet, Button, Modal, Text, View } from "react-native";
-
 export default {
   primary: "#fc5c65",
   secondary: "#4ecdc4",

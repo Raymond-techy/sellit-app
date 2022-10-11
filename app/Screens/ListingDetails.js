@@ -1,3 +1,4 @@
+import uuid from "react-native-uuid";
 import React, { useState, useEffect } from "react";
 import { Image, Text, StyleSheet, View, FlatList } from "react-native";
 import ListItem from "../Components/ListItem";
@@ -6,6 +7,7 @@ import Screen from "../Components/Screen";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { getAuth } from "firebase/auth";
 import listingApi from "../Firebase/Api";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 function ListingDetails({ route, navigation }) {
   const [seller, setSeller] = useState(null);
@@ -18,12 +20,13 @@ function ListingDetails({ route, navigation }) {
       setSeller(user);
     };
     const getMore = async () => {
-      const otherPro = await listingApi.getUser(listing.sellerRef);
+      const otherPro = await listingApi.fetchMyListings(listing.sellerRef);
       console.log(otherPro);
       setOthers(otherPro);
     };
     getSeller();
-  }, [listing.sellerRef, listing.sellerRef]);
+    getMore();
+  }, [listing.sellerRef]);
 
   const [selectedImage, setSelectedImage] = useState(listing.images[0]);
   const handleSelect = (imgSrc) => {
@@ -60,9 +63,11 @@ function ListingDetails({ route, navigation }) {
 
         {seller && auth.currentUser.uid !== listing.sellerRef ? (
           <ListItem
+            chevron={false}
             title={seller.name}
             imgURL={seller.imgurl}
-            handlePress={() =>
+            chatBtn={true}
+            chatSeller={() =>
               navigation.navigate("messaging", {
                 screen: "Chat",
                 params: {
@@ -72,11 +77,22 @@ function ListingDetails({ route, navigation }) {
                 },
               })
             }
-            subtitle="Product owner"
+            subtitle={
+              others.length <= 1
+                ? "Product Owner"
+                : others.length + " " + "Listings"
+            }
           />
         ) : (
           auth.currentUser.uid === listing.sellerRef && (
-            <Text>You Own This Product</Text>
+            <View style={styles.owner}>
+              <MaterialCommunityIcons
+                name="information-variant"
+                color="#38E54D"
+                size={30}
+              />
+              <Text style={styles.txt}>You Own This Product</Text>
+            </View>
           )
         )}
       </View>
@@ -85,6 +101,22 @@ function ListingDetails({ route, navigation }) {
 }
 
 const styles = StyleSheet.create({
+  owner: {
+    width: "80%",
+    height: 50,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: Colors.light,
+    marginRight: "auto",
+    marginLeft: "auto",
+    borderRadius: 15,
+  },
+  txt: {
+    fontWeight: "bold",
+    fontSize: 20,
+  },
+
   currentImg: {
     borderWidth: 2,
     borderColor: Colors.primary,
@@ -118,6 +150,14 @@ const styles = StyleSheet.create({
   },
   listingDet: {
     flex: 1,
+  },
+  listings: {
+    overflow: "",
+    flex: 1,
+    // height: "100%",
+    // backgroundColor: "#f8f4f4",
+    // paddingHorizontal: 20,
+    // paddingBottom: 60,
   },
 });
 

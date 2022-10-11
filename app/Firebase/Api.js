@@ -1,16 +1,18 @@
 import uuid from "react-native-uuid";
+
 import {
   addDoc,
   collection,
   getDoc,
   getDocs,
-  limit,
   doc,
   orderBy,
   query,
   serverTimestamp,
   where,
+  onSnapshot,
 } from "firebase/firestore";
+
 import {
   getStorage,
   ref,
@@ -20,6 +22,8 @@ import {
 import { db } from "../../firebase.config";
 import { getAuth } from "firebase/auth";
 import Cache from "../utility/Cache";
+
+const auth = getAuth();
 const fetchListings = async () => {
   try {
     const listingRef = collection(db, "listings");
@@ -43,13 +47,12 @@ const fetchListings = async () => {
     throw Error(error);
   }
 };
-const fetchMyListings = async () => {
-  const auth = getAuth();
+const fetchMyListings = async (refIden = auth.currentUser.uid) => {
   try {
     const listingRef = collection(db, "listings");
     const queries = query(
       listingRef,
-      where("sellerRef", "==", auth.currentUser.uid),
+      where("sellerRef", "==", refIden),
       orderBy("timestamp", "desc")
     );
     const querySnap = await getDocs(queries);
@@ -63,7 +66,6 @@ const fetchMyListings = async () => {
     const key = "mylistings";
     if (listings.length >= 1) {
       Cache.store(key, listings);
-      // console.log(listings);
       return listings;
     }
     const data = await Cache.get(key);
@@ -72,32 +74,38 @@ const fetchMyListings = async () => {
     throw Error(error);
   }
 };
-const postListings = async (listings) => {
+const fetchWishList = async () => {
   const auth = getAuth();
-  const userRef = auth.currentUser.uid;
   try {
-    const { imgurl } = listings;
-    const images = await Promise.all(
-      [...imgurl].map((image) => storeImage(image.uri))
-    ).catch(() => {
-      setLoading(false);
-      toast.error("Images not uploaded");
-      return;
-    });
-    console.log(images);
-    const formData = {
-      ...listings,
-      images,
-      timestamp: serverTimestamp(),
-      sellerRef: userRef,
+    const myWishRef = collection(db, "wishes");
+    const queries = query(
+      myWishRef,
+      where("wishRef", "==", auth.currentUser.uid),
+      orderBy("timestamp", "desc")
+    );
+    const myWish = [];
+    const unsubscribe = () => {
+      onSnapshot(queries, (querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          myWish.push(doc.data());
+        });
+      });
+      return myWish;
     };
-    delete formData.imgurl;
-    console.log(formData);
-    const docRef = await addDoc(collection(db, "listings"), formData);
+    unsubscribe();
+    console.log(myWish);
+    const key = "myWish";
+    if (myWish.length >= 1) {
+      Cache.store(key, myWish);
+      return myWish;
+    }
+    const data = await Cache.get(key);
+    return data ? data : myWish;
   } catch (error) {
     throw Error(error);
   }
 };
+
 const getUser = async (sellerRef) => {
   try {
     const userRef = doc(db, "users", sellerRef);
@@ -192,10 +200,53 @@ const storeImage = async (image_url) => {
     );
   });
 };
+
+const postListings = async (listings) => {
+  const auth = getAuth();
+  const userRef = auth.currentUser.uid;
+  try {
+    const { imgurl } = listings;
+    const images = await Promise.all(
+      [...imgurl].map((image) => storeImage(image.uri))
+    ).catch(() => {
+      setLoading(false);
+      toast.error("Images not uploaded");
+      return;
+    });
+    console.log(images);
+    const formData = {
+      ...listings,
+      images,
+      timestamp: serverTimestamp(),
+      sellerRef: userRef,
+    };
+    delete formData.imgurl;
+    console.log(formData);
+    const docRef = await addDoc(collection(db, "listings"), formData);
+  } catch (error) {
+    throw Error(error);
+  }
+};
+const postWish = async (wish) => {
+  const auth = getAuth();
+  const userRef = auth.currentUser.uid;
+  try {
+    const formData = {
+      ...wish,
+      timestamp: serverTimestamp(),
+      wishRef: userRef,
+    };
+    const docRef = await addDoc(collection(db, "wishes"), formData);
+  } catch (error) {
+    throw Error(error);
+  }
+};
 export default {
   fetchListings,
   fetchMyListings,
-  postListings,
+  fetchWishList,
   getMessages,
   getUser,
+  postListings,
+  postWish,
 };

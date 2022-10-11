@@ -53,12 +53,11 @@ function MessagesScreen({ navigation }) {
       unsub();
       unsubscribe();
     };
+    setMessages([...received, ...sent]);
 
     if (focus === true) getChat();
-
-    setMessages([...received, ...sent]);
     console.log(messages, "All messages sent and received");
-  }, [focus, auth.currentUser.uid]);
+  }, [focus]);
 
   const [refresh, setRefresh] = useState(false);
   const handleDeleteMsg = (itemID) => {
@@ -70,66 +69,67 @@ function MessagesScreen({ navigation }) {
     }, 2000);
   };
   return (
-    <Screen>
-      {messages.length >= 1 && (
-        <ScrollView>
-          {messages
-            .sort((a, b) => b.date - a.date)
-            .map((message) => (
-              <View key={uuid.v4()}>
-                {message.receiver.ref === auth.currentUser.uid ? (
-                  <ListItem
-                    title={message.sender.name}
-                    subtitle={message.lastMessage}
-                    imgURL={message.sender.img}
-                    handlePress={() =>
-                      navigation.navigate("messaging", {
-                        screen: "Chat",
-                        params: {
-                          name: message.sender.name,
-                          imgurl: message.sender.img,
-                          ref: message.sender.ref,
-                        },
-                      })
-                    }
-                    renderRightActions={() => (
-                      <ListItemDeleteAction
-                        handlePress={() => handleDeleteMsg(item.id)}
-                      />
-                    )}
-                    chevron={false}
-                  />
-                ) : (
-                  message.sender.ref === auth.currentUser.uid && (
+    <>
+      <Screen>
+        {messages.length >= 1 && (
+          <ScrollView>
+            {messages
+              .sort((a, b) => b.date - a.date)
+              .map((message) => (
+                <View key={uuid.v4()}>
+                  {message.receiver.ref === auth.currentUser.uid ? (
                     <ListItem
-                      title={message.receiver.name}
+                      title={message.sender.name}
                       subtitle={message.lastMessage}
-                      imgURL={message.receiver.img}
+                      imgURL={message.sender.img}
                       handlePress={() =>
                         navigation.navigate("messaging", {
                           screen: "Chat",
                           params: {
-                            name: message.receiver.name,
-                            imgurl: message.receiver.img,
-                            ref: message.receiver.ref,
+                            name: message.sender.name,
+                            imgurl: message.sender.img,
+                            ref: message.sender.ref,
                           },
                         })
                       }
-                      chevron={false}
                       renderRightActions={() => (
                         <ListItemDeleteAction
                           handlePress={() => handleDeleteMsg(item.id)}
                         />
                       )}
+                      chevron={false}
                     />
-                  )
-                )}
-              </View>
-            ))}
-        </ScrollView>
-      )}
+                  ) : (
+                    message.sender.ref === auth.currentUser.uid && (
+                      <ListItem
+                        title={message.receiver.name}
+                        subtitle={message.lastMessage}
+                        imgURL={message.receiver.img}
+                        handlePress={() =>
+                          navigation.navigate("messaging", {
+                            screen: "Chat",
+                            params: {
+                              name: message.receiver.name,
+                              imgurl: message.receiver.img,
+                              ref: message.receiver.ref,
+                            },
+                          })
+                        }
+                        chevron={false}
+                        renderRightActions={() => (
+                          <ListItemDeleteAction
+                            handlePress={() => handleDeleteMsg(item.id)}
+                          />
+                        )}
+                      />
+                    )
+                  )}
+                </View>
+              ))}
+          </ScrollView>
+        )}
 
-      {/* {messages.length >= 1 && (
+        {/* {messages.length >= 1 && (
         <FlatList
           data={messages.sort((a, b) => b.date - a.date)}
           refreshing={refresh}
@@ -164,7 +164,8 @@ function MessagesScreen({ navigation }) {
           ItemSeparatorComponent={() => <ListItmSep />}
         />
       )} */}
-    </Screen>
+      </Screen>
+    </>
   );
 }
 

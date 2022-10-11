@@ -86,11 +86,11 @@ export default function ListingEditScreen() {
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
   const [complete, setComplete] = useState(false);
-  const handleSubmit = async (listing) => {
+  const handleSubmit = async (listing, { resetForm }) => {
     setLoading(true);
     await listingsApi.postListings(listing).catch((err) => {
-      setLoading(false);
       setError(true);
+      setLoading(false);
       return;
     });
     setLoading(false);
@@ -98,7 +98,7 @@ export default function ListingEditScreen() {
     setTimeout(() => {
       setComplete(false);
     }, 2000);
-    console.log(listing);
+    resetForm();
     navigation.navigate("Home");
   };
 
@@ -112,7 +112,7 @@ export default function ListingEditScreen() {
         visible={complete}
         source={require("../assets/animations/done.json")}
       />
-      <ErrorModal visible={error} closeModal={() => setError(false)} />
+      <ErrorModal visible={Error} closeModal={() => setError(false)} />
       <View style={styles.container}>
         <ScrollView showsVerticalScrollIndicator={false}>
           <Image source={require("../assets/SellIT.png")} style={styles.logo} />

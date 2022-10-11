@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import Colors from "../config/Colors";
 import { TouchableHighlight } from "react-native-gesture-handler";
-function Card({
+function SmallCard({
   title,
   subTitle,
   image,
@@ -50,15 +50,16 @@ function Card({
 }
 const styles = StyleSheet.create({
   Card: {
-    backgroundColor: Colors.white,
+    backgroundColor: Colors.light,
     borderRadius: 15,
     marginBottom: 20,
     overflow: "hidden",
-    width: "100%",
+    width: 200,
+    marginHorizontal: 10,
   },
   image: {
     width: "100%",
-    height: 200,
+    height: 100,
   },
   textCard: {
     flexDirection: "row",
@@ -66,12 +67,12 @@ const styles = StyleSheet.create({
     padding: 15,
   },
   title: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: "bold",
     marginBottom: 4,
   },
   subTitle: {
-    fontSize: 18,
+    fontSize: 14,
     fontWeight: "bold",
     color: Colors.secondary,
   },
@@ -82,4 +83,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Card;
+export default SmallCard;

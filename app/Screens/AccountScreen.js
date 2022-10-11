@@ -42,7 +42,6 @@ export default function AccountScreen() {
           <ListItem
             title={user.displayName}
             subtitle={user.email}
-            // imgSrc={require("../assets/mosh(2).jpg")}
             imgURL={user.photoURL}
           />
         </View>
@@ -53,7 +52,13 @@ export default function AccountScreen() {
             ItemSeparatorComponent={ListItmSep}
             renderItem={({ item }) => (
               <ListItem
-                handlePress={() => navigation.navigate(item.target)}
+                handlePress={() =>
+                  item.target === "messages"
+                    ? navigation.navigate("messaging", {
+                        screen: "messages",
+                      })
+                    : navigation.navigate(item.target)
+                }
                 title={item.title}
                 IconComponent={
                   <Icon
