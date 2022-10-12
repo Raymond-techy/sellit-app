@@ -49,9 +49,7 @@ export default function RegisterScreen() {
       });
 
     responseListener.current =
-      Notifications.addNotificationResponseReceivedListener((response) => {
-        console.log(response, "from resnse");
-      });
+      Notifications.addNotificationResponseReceivedListener((response) => {});
 
     return () => {
       Notifications.removeNotificationSubscription(
@@ -86,7 +84,6 @@ export default function RegisterScreen() {
         return;
       }
       token = (await Notifications.getExpoPushTokenAsync()).data;
-      console.log(token);
     } else {
       alert("Must use physical device for Push Notifications");
     }

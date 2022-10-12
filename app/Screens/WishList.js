@@ -49,7 +49,6 @@ export default function WishList({ navigation }) {
         ref: userRef,
       },
     });
-    console.log(userRef);
   };
   return (
     <Screen>
@@ -64,9 +63,6 @@ export default function WishList({ navigation }) {
               subTitle={"$" + data.price.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
               image={data.images[0]}
               handleChat={() => chatSeller(data.sellerRef)}
-              // onPress={() =>
-              //   navigation.navigate("listingDetails", { listing: data })
-              // }
             />
           )}
         />

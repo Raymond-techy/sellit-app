@@ -10,7 +10,7 @@ const store = async (key, value) => {
     const jsonValue = JSON.stringify(item);
     await AsyncStorage.setItem(prefix + key, jsonValue);
   } catch (error) {
-    console.log(error);
+    throw Error(error);
   }
 };
 

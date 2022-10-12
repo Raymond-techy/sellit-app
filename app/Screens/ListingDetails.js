@@ -21,7 +21,7 @@ function ListingDetails({ route, navigation }) {
     };
     const getMore = async () => {
       const otherPro = await listingApi.fetchMyListings(listing.sellerRef);
-      console.log(otherPro);
+
       setOthers(otherPro);
     };
     getSeller();

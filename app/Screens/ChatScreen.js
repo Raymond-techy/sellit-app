@@ -46,7 +46,6 @@ export default function ChatScreen() {
         });
       };
       unsub();
-      console.log(chats, "type of chats");
     };
     getMessages();
     navigation.getParent()?.setOptions({

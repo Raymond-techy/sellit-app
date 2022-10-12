@@ -17,7 +17,6 @@ export default function MyLIstings({ navigation }) {
   }, []);
   const loadMyListings = async () => {
     const listings = await listingApi.fetchMyListings();
-    console.log(listings, "fetch my listings");
     setMyListings(listings);
   };
 

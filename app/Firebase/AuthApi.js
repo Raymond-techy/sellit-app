@@ -38,7 +38,6 @@ const createUser = async (formData) => {
       userRef: user.uid,
     };
     formData.timestamp = serverTimestamp();
-    console.log(user.uid, "user identity logged");
     await setDoc(doc(db, "users", user.uid), formData);
     return user;
   } catch (error) {
@@ -70,7 +69,6 @@ const storeImage = async (image_url) => {
     const img = await fetch(image_url);
     const blob = await img.blob();
 
-    console.log("uploading image");
     const uploadTask = uploadBytesResumable(storageRef, blob);
 
     // Listen for state changes, errors, and completion of the upload.
@@ -80,13 +78,10 @@ const storeImage = async (image_url) => {
         // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
         const progress =
           (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        console.log("Upload is " + progress + "% done");
         switch (snapshot.state) {
           case "paused":
-            console.log("Upload is paused");
             break;
           case "running":
-            console.log("Upload is running");
             break;
         }
       },
@@ -96,13 +91,10 @@ const storeImage = async (image_url) => {
         // https://firebase.google.com/docs/storage/web/handle-errors
         switch (error.code) {
           case "storage/unauthorized":
-            console.log("User doesn't have permission to access the object");
             break;
           case "storage/canceled":
-            console.log("User canceled the upload");
             break;
           case "storage/unknown":
-            console.log("Unknown error occurred, inspect error.serverResponse");
             break;
         }
       },
