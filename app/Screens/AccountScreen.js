@@ -55,7 +55,7 @@ export default function AccountScreen() {
               <ListItem
                 handlePress={() =>
                   item.target === "messages"
-                    ? navigation.navigate("messaging", {
+                    ? navigation.navigate("Chats", {
                         screen: "messages",
                       })
                     : navigation.navigate(item.target)

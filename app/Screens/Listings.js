@@ -118,7 +118,9 @@ function Listings() {
             key={uuid.v4()}
             handleAddToWish={() => handleWish(listing)}
             title={listing.data.title}
-            subTitle={"$" + listing.data.price}
+            subTitle={
+              "$" + listing.data.price.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+            }
             image={listing.data.images[0]}
             onPress={() =>
               navigation.navigate("listingDetails", { listing: listing.data })

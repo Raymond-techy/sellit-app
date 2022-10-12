@@ -61,7 +61,7 @@ export default function WishList({ navigation }) {
           renderItem={({ item: { id, data } }) => (
             <WishItem
               title={data.title}
-              subTitle={"$" + data.price}
+              subTitle={"$" + data.price.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
               image={data.images[0]}
               handleChat={() => chatSeller(data.sellerRef)}
               // onPress={() =>
@@ -77,7 +77,7 @@ export default function WishList({ navigation }) {
 
 const styles = StyleSheet.create({
   wishList: {
-    overflow: "hidden",
+    // overflow: "hidden",
     flex: 1,
     alignItems: "center",
     padding: 10,

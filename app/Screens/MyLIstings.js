@@ -36,7 +36,9 @@ export default function MyLIstings({ navigation }) {
             renderItem={({ item: { id, data } }) => (
               <Card
                 title={data.title}
-                subTitle={"$" + data.price}
+                subTitle={
+                  "$" + data.price.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                }
                 image={data.images[0]}
                 onPress={() =>
                   navigation.navigate("listingDetails", { listing: data })
