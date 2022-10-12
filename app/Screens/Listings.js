@@ -1,16 +1,6 @@
 import React, { useEffect, useState } from "react";
-import {
-  FlatList,
-  RefreshControl,
-  View,
-  StyleSheet,
-  ScrollView,
-} from "react-native";
-import {
-  useIsFocused,
-  useNavigation,
-  useNavigationState,
-} from "@react-navigation/native";
+import { RefreshControl, View, StyleSheet, ScrollView } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 import uuid from "react-native-uuid";
 
 import ActivityIndicator from "../Components/ActivityIndicator";
@@ -23,8 +13,13 @@ import Colors from "../config/Colors";
 import { Paginate } from "../Components/Hooks/Paginate";
 import Pagination from "../Components/Pagination";
 import AppTextInput from "../Components/AppTextInput";
+import Container, { Toast } from "toastify-react-native";
+import { collection, getDocs, limit, query, where } from "firebase/firestore";
+import { db } from "../../firebase.config";
+import { getAuth } from "firebase/auth";
 
 function Listings() {
+  const auth = getAuth();
   const navigation = useNavigation();
   const [listings, setListings] = useState([]);
   const [pagListings, setPagListings] = useState([]);
@@ -66,13 +61,30 @@ function Listings() {
     const listingPag = Paginate(pagListings, page, pageSize);
     setListings(listingPag);
   };
+  const handleWish = async (wish) => {
+    const itemRef = collection(db, "wishlists");
+    const queries = query(itemRef, where("id", "==", wish.id), limit(1));
+    const querySnap = await getDocs(queries);
+    if (querySnap.empty) {
+      try {
+        await listingApi.postWish(wish);
+        Toast.success("Item successfully added to Wish");
+      } catch (error) {
+        Toast.error("An error occured while adding item");
+      }
+      return;
+    } else {
+      Toast.warn("Item already exist in wishLists");
+    }
+  };
   const queryListing = searchQuery
-    ? listings.filter((pag) =>
+    ? pagListings.filter((pag) =>
         pag.data.title.toLowerCase().includes(searchQuery.toLowerCase())
       )
     : listings;
   return (
     <Screen>
+      <Container />
       {listingError && (
         <View>
           <Text style={styles.text}>Couldn't fetch Listings</Text>
@@ -81,6 +93,8 @@ function Listings() {
       )}
       <ActivityIndicator visible={loading} />
       <AppTextInput
+        placeholder="Search product"
+        style={styles.style}
         value={searchQuery}
         onChangeText={(text) => {
           setCurrentPage(1);
@@ -95,9 +109,14 @@ function Listings() {
       >
         {queryListing.map((listing) => (
           <Card
+            wishIcon={
+              auth.currentUser.uid !== listing.data.sellerRef ? true : false
+            }
+            sellerBadge={
+              auth.currentUser.uid === listing.data.sellerRef ? true : false
+            }
             key={uuid.v4()}
-            handleAddToWish={() => console.log(item)}
-            wishIcon={true}
+            handleAddToWish={() => handleWish(listing)}
             title={listing.data.title}
             subTitle={"$" + listing.data.price}
             image={listing.data.images[0]}
@@ -129,6 +148,14 @@ const styles = StyleSheet.create({
     color: Colors.danger,
     fontSize: 20,
     fontWeight: "bold",
+    fontFamily: "nunito-bold",
+  },
+  style: {
+    marginRight: "auto",
+    marginLeft: "auto",
+    width: "90%",
+    height: 35,
+    borderColor: Colors.medium,
   },
 });
 export default Listings;

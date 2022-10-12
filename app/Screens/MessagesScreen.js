@@ -1,14 +1,14 @@
 import { getAuth } from "firebase/auth";
-import { collection, doc, onSnapshot, query, where } from "firebase/firestore";
+import { collection, onSnapshot, query, where } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
-import { ScrollView, FlatList, Text, View } from "react-native";
+import { Text, StyleSheet, ScrollView, View } from "react-native";
 import { db } from "../../firebase.config";
 import ListItem from "../Components/ListItem";
 import ListItemDeleteAction from "../Components/ListItemDeleteAction";
-import ListItmSep from "../Components/ListItmSep";
 import Screen from "../Components/Screen";
 import uuid from "react-native-uuid";
 import { useIsFocused } from "@react-navigation/native";
+
 function MessagesScreen({ navigation }) {
   const [messages, setMessages] = useState([]);
   const [received, setReceived] = useState([]);
@@ -24,7 +24,6 @@ function MessagesScreen({ navigation }) {
         onSnapshot(q, (querySnapshot) => {
           const messages = [];
           querySnapshot.forEach((doc) => {
-            console.log(doc.data());
             messages.push({
               receiver: doc.data().receiverDetails,
               sender: doc.data().senderDetails,
@@ -39,7 +38,6 @@ function MessagesScreen({ navigation }) {
         onSnapshot(q2, (querySnapshot) => {
           const messages = [];
           querySnapshot.forEach((doc) => {
-            console.log(doc.data());
             messages.push({
               receiver: doc.data().receiverDetails,
               sender: doc.data().senderDetails,
@@ -52,11 +50,9 @@ function MessagesScreen({ navigation }) {
       };
       unsub();
       unsubscribe();
+      setMessages([...received, ...sent]);
     };
-    setMessages([...received, ...sent]);
-
-    if (focus === true) getChat();
-    console.log(messages, "All messages sent and received");
+    getChat();
   }, [focus]);
 
   const [refresh, setRefresh] = useState(false);
@@ -71,7 +67,7 @@ function MessagesScreen({ navigation }) {
   return (
     <>
       <Screen>
-        {messages.length >= 1 && (
+        {messages.length >= 1 ? (
           <ScrollView>
             {messages
               .sort((a, b) => b.date - a.date)
@@ -83,7 +79,7 @@ function MessagesScreen({ navigation }) {
                       subtitle={message.lastMessage}
                       imgURL={message.sender.img}
                       handlePress={() =>
-                        navigation.navigate("messaging", {
+                        navigation.navigate("Chats", {
                           screen: "Chat",
                           params: {
                             name: message.sender.name,
@@ -106,7 +102,7 @@ function MessagesScreen({ navigation }) {
                         subtitle={message.lastMessage}
                         imgURL={message.receiver.img}
                         handlePress={() =>
-                          navigation.navigate("messaging", {
+                          navigation.navigate("Chats", {
                             screen: "Chat",
                             params: {
                               name: message.receiver.name,
@@ -127,46 +123,28 @@ function MessagesScreen({ navigation }) {
                 </View>
               ))}
           </ScrollView>
+        ) : (
+          <View style={styles.noChat}>
+            <Text style={styles.txt}>
+              You Currently Have No messages at The Moment Chat a seller to Get
+              Started!
+            </Text>
+          </View>
         )}
-
-        {/* {messages.length >= 1 && (
-        <FlatList
-          data={messages.sort((a, b) => b.date - a.date)}
-          refreshing={refresh}
-          onRefresh={() => console.log("first")}
-          renderItem={({
-            item: { sender, ref, lastMessage, senderId, receiver, receiverId },
-          }) => {
-            receiverId === auth.currentUser.uid && (
-              <ListItem
-                title={sender.name}
-                subtitle={lastMessage}
-                imgURL={sender.img}
-                handlePress={() =>
-                  navigation.navigate("messaging", {
-                    screen: "Chat",
-                    params: {
-                      name: sender.name,
-                      imgurl: sender.img,
-                      ref: sender.ref,
-                    },
-                  })
-                }
-                renderRightActions={() => (
-                  <ListItemDeleteAction
-                    handlePress={() => handleDeleteMsg(item.id)}
-                  />
-                )}
-              />
-            );
-          }}
-          keyExtractor={(message) => message.uid}
-          ItemSeparatorComponent={() => <ListItmSep />}
-        />
-      )} */}
       </Screen>
     </>
   );
 }
-
+const styles = StyleSheet.create({
+  noChat: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  txt: {
+    textAlign: "center",
+    fontWeight: "bold",
+    fontSize: 30,
+  },
+});
 export default MessagesScreen;

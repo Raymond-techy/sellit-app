@@ -59,7 +59,7 @@ function AppNavigator() {
         })}
       />
       <Tab.Screen
-        name="messaging"
+        name="Chats"
         component={MessageNavigator}
         options={{
           headerShown: false,

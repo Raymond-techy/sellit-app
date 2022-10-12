@@ -1,10 +1,4 @@
-import {
-  FlatList,
-  StyleSheet,
-  Text,
-  TouchableWithoutFeedback,
-  View,
-} from "react-native";
+import { StyleSheet, Text, TouchableWithoutFeedback, View } from "react-native";
 import React from "react";
 import _ from "lodash";
 
@@ -40,6 +34,7 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
     alignItems: "flex-end",
     flexDirection: "row",
+    borderColor: "#38E54D",
   },
   selected: {
     padding: 10,

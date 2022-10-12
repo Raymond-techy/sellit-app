@@ -1,11 +1,10 @@
 import { StyleSheet, Text, View } from "react-native";
 import React from "react";
-import Colors from "../config/Colors";
 
 export default function Message({ text, style }) {
   return (
     <View style={[styles.message, style]}>
-      <Text>{text}</Text>
+      <Text style={styles.txt}>{text}</Text>
     </View>
   );
 }
@@ -18,5 +17,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginBottom: 15,
     padding: 10,
+  },
+  txt: {
+    fontFamily: "nunito-bold",
   },
 });

@@ -1,5 +1,5 @@
 import React from "react";
-import { Image, StyleSheet, View, Button } from "react-native";
+import { Image, StyleSheet, View } from "react-native";
 import Colors from "../config/Colors";
 
 function ViewImageScreen() {

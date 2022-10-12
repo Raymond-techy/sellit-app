@@ -75,8 +75,10 @@ const styles = StyleSheet.create({
   subtitle: {
     fontColor: "#6e6969",
     fontSize: 12,
+    fontFamily: "nunito-bold",
   },
   title: {
+    fontFamily: "nunito-bold",
     fontWeight: "500",
     fontSize: 18,
     paddingBottom: 3,

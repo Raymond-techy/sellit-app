@@ -13,9 +13,10 @@ import {
 } from "firebase/storage";
 import { serverTimestamp, setDoc, doc } from "firebase/firestore";
 import { db } from "../../firebase.config";
-const createUser = async (name, email, password, image_url) => {
+const createUser = async (formData) => {
+  const { name, password, email, imgurl, token } = formData;
+  const image_url = await imgurl[0].uri;
   try {
-    console.log(image_url, "profile pic");
     const auth = getAuth();
     const userCredential = await createUserWithEmailAndPassword(
       auth,
@@ -23,16 +24,17 @@ const createUser = async (name, email, password, image_url) => {
       password
     );
     const profilePic = await storeImage(image_url);
-    console.log(profilePic, "profile pic uploaded");
     updateProfile(auth.currentUser, {
       displayName: name,
       photoURL: profilePic,
+      phoneNumber: token,
     });
     const user = userCredential.user;
     const formData = {
       name: name,
       email: email,
       imgurl: profilePic,
+      notifToken: token,
       userRef: user.uid,
     };
     formData.timestamp = serverTimestamp();

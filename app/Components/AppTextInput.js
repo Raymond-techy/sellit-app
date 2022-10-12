@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { StyleSheet, View, TextInput, Platform } from "react-native";
+import React from "react";
+import { StyleSheet, View, TextInput } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Colors from "../config/Colors";
 export default function AppTextInput({
@@ -8,7 +8,6 @@ export default function AppTextInput({
   placeholder,
   ...otherProps
 }) {
-  const [isNew, setIsNew] = useState(false);
   return (
     <>
       <View style={[styles.container, style]}>
@@ -40,18 +39,15 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     padding: 8,
     marginVertical: 10,
-    // marginRight: "auto",
-    // marginLeft: "auto",
   },
   icon: {
-    // marginHorizontal: 12,
     marginTop: 4,
   },
   TextInput: {
     flex: 1,
     color: Colors.dark_g,
     fontSize: 16,
-    fontFamily: Platform.OS === "ios" ? "avenir" : "Roboto",
+    fontFamily: "nunito-regular",
     paddingLeft: 6,
   },
 });

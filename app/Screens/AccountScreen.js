@@ -43,6 +43,7 @@ export default function AccountScreen() {
             title={user.displayName}
             subtitle={user.email}
             imgURL={user.photoURL}
+            chevron={false}
           />
         </View>
         <View style={styles.container}>

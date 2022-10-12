@@ -4,7 +4,7 @@
     "slug": "sellIt",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./app/assets/icon.png",
+    "icon": "./app/assets/SellIT.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./app/assets/SellIT.png",
@@ -28,6 +28,8 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.sellit.apper",
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./app/assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"

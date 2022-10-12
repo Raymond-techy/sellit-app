@@ -1,7 +1,8 @@
-import React, { useEffect, useContext, useState } from "react";
+import React, { useEffect, useContext, useState, useRef } from "react";
 import { StyleSheet, Text, View, TouchableWithoutFeedback } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import * as Notifications from "expo-notifications";
+import * as Device from "expo-device";
 import { Formik } from "formik";
 import * as Yup from "yup";
 
@@ -21,33 +22,96 @@ const validationSchema = Yup.object().shape({
   imgurl: Yup.array().max(1, "Just one image required").label("Images"),
 });
 
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: true,
+  }),
+});
 export default function RegisterScreen() {
   const navigation = useNavigation();
   const { setUser } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
+  const [expoPushToken, setExpoPushToken] = useState("");
+  const [notification, setNotification] = useState(false);
+  const notificationListener = useRef();
+  const responseListener = useRef();
+
   useEffect(() => {
-    regForPushNot();
+    registerForPushNotificationsAsync().then((token) =>
+      setExpoPushToken(token)
+    );
+
+    notificationListener.current =
+      Notifications.addNotificationReceivedListener((notification) => {
+        setNotification(notification);
+      });
+
+    responseListener.current =
+      Notifications.addNotificationResponseReceivedListener((response) => {
+        console.log(response, "from resnse");
+      });
+
+    return () => {
+      Notifications.removeNotificationSubscription(
+        notificationListener.current
+      );
+      Notifications.removeNotificationSubscription(responseListener.current);
+    };
   }, []);
 
-  const regForPushNot = async () => {
-    const requestPermission = await Notifications.getPermissionsAsync();
-    if (!requestPermission.granted) return;
-    try {
-      const token = await Notifications.getExpoPushTokenAsync();
-      console.log(token);
-    } catch (error) {
-      console.log("error getting a push token", error);
+  async function registerForPushNotificationsAsync() {
+    let token;
+
+    if (Platform.OS === "android") {
+      await Notifications.setNotificationChannelAsync("default", {
+        name: "default",
+        importance: Notifications.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: "#FF231F7C",
+      });
     }
-  };
+
+    if (Device.isDevice) {
+      const { status: existingStatus } =
+        await Notifications.getPermissionsAsync();
+      let finalStatus = existingStatus;
+      if (existingStatus !== "granted") {
+        const { status } = await Notifications.requestPermissionsAsync();
+        finalStatus = status;
+      }
+      if (finalStatus !== "granted") {
+        alert("Failed to get push token for push notification!");
+        return;
+      }
+      token = (await Notifications.getExpoPushTokenAsync()).data;
+      console.log(token);
+    } else {
+      alert("Must use physical device for Push Notifications");
+    }
+
+    return token;
+  }
+
+  async function schedulePushNotification() {
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: "Registeration Successful",
+        body: "Your account has been sucessfully Registered",
+        data: { data: "goes here" },
+      },
+      trigger: { seconds: 2 },
+    });
+  }
+
   const handleSubmit = async (values) => {
     setLoading(true);
-    const { name, email, password, imgurl } = values;
-    const user = await AuthApi.createUser(
-      name,
-      email,
-      password,
-      imgurl[0].uri
-    ).catch((err) => {
+    const formData = {
+      ...values,
+      token: expoPushToken,
+    };
+    const user = await AuthApi.createUser(formData).catch((err) => {
       setLoading(false);
       if (err === "auth/email-already-in-use") {
         Toast.error("email already exist");
@@ -57,6 +121,7 @@ export default function RegisterScreen() {
     });
     setLoading(false);
     setUser(user);
+    await schedulePushNotification();
   };
   const handleLogin = () => {
     navigation.navigate("login");
@@ -66,6 +131,7 @@ export default function RegisterScreen() {
     <Screen>
       <Container position="top" />
       <ActivityIndicator visible={loading} />
+
       <View style={styles.container}>
         <Text style={styles.signUp}>Create Your Account</Text>
         <TouchableWithoutFeedback onPress={handleLogin}>
@@ -123,9 +189,11 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 30,
     fontWeight: "bold",
+    fontFamily: "nunito-bold",
   },
   login: {
     textAlign: "center",
     color: "dodgerblue",
+    fontFamily: "nunito-regular",
   },
 });

@@ -44,7 +44,7 @@ export default function LoginScreen() {
           onSubmit={handleSubmit}
           validationSchema={validationSchema}
         >
-          {({ handleSubmit }) => (
+          {() => (
             <>
               <AppFormFIeld
                 name="email"

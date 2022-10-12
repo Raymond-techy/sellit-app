@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useCallback, useState, useEffect, useRef } from "react";
+import { useFonts } from "expo-font";
 import Container from "toastify-react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
@@ -9,12 +10,12 @@ import AppNavigator from "./app/Navigation/AppNavigator";
 import OfflineNotice from "./app/Components/OfflineNotice";
 import AuthNavigator from "./app/Navigation/AuthNavigator";
 import AuthContext from "./app/Context/AuthContext";
+import * as SplashScreen from "expo-splash-screen";
 
+SplashScreen.preventAutoHideAsync();
 const Tab = createBottomTabNavigator();
 export default function App() {
   const [user, setUser] = useState();
-  const [loggedIn, setLoggedIn] = useState(false);
-  const [checkingStatus, setCheckingStatus] = useState(true);
   const isMounted = useRef(true);
   useEffect(() => {
     if (isMounted) {
@@ -22,16 +23,28 @@ export default function App() {
       onAuthStateChanged(auth, (user) => {
         if (user) {
           setUser(user);
-          setLoggedIn(true);
         }
-        setCheckingStatus(false);
+        onLayOutRootView();
       });
     }
     return () => {
       isMounted.current = false;
     };
   }, [isMounted]);
-  // if (checkingStatus) return <AppLoading />;
+
+  const [fontsLoaded] = useFonts({
+    "nunito-regular": require("./app/assets/Fonts/Nunito-Regular.ttf"),
+    "nunito-bold": require("./app/assets/Fonts/Nunito-Bold.ttf"),
+  });
+
+  const onLayOutRootView = useCallback(async () => {
+    setTimeout(async () => {
+      await SplashScreen.hideAsync();
+    }, 1000);
+  }, []);
+  if (!fontsLoaded) {
+    return null;
+  }
   return (
     <AuthContext.Provider value={{ user, setUser }}>
       <OfflineNotice />

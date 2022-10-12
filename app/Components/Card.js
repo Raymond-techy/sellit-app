@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import {
   StyleSheet,
@@ -16,6 +16,7 @@ function Card({
   onPress,
   handleAddToWish,
   wishIcon = false,
+  sellerBadge = false,
 }) {
   return (
     <View style={styles.Card}>
@@ -44,6 +45,16 @@ function Card({
             />
           </TouchableHighlight>
         )}
+        {sellerBadge && (
+          <View style={styles.owner}>
+            <MaterialCommunityIcons
+              name="information-variant"
+              color="#38E54D"
+              size={18}
+            />
+            <Text style={styles.txt}>Your Product</Text>
+          </View>
+        )}
       </View>
     </View>
   );
@@ -55,6 +66,15 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     overflow: "hidden",
     width: "100%",
+  },
+  owner: {
+    width: "40%",
+    height: 40,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: Colors.light,
+    borderRadius: 15,
   },
   image: {
     width: "100%",
@@ -69,11 +89,13 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     marginBottom: 4,
+    fontFamily: "nunito-bold",
   },
   subTitle: {
     fontSize: 18,
-    fontWeight: "bold",
+    // fontWeight: "bold",
     color: Colors.secondary,
+    fontFamily: "nunito-bold",
   },
   wishIcon: {
     borderRadius: 25,

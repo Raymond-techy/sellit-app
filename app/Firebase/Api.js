@@ -74,81 +74,20 @@ const fetchMyListings = async (refIden = auth.currentUser.uid) => {
     throw Error(error);
   }
 };
-const fetchWishList = async () => {
-  const auth = getAuth();
-  try {
-    const myWishRef = collection(db, "wishes");
-    const queries = query(
-      myWishRef,
-      where("wishRef", "==", auth.currentUser.uid),
-      orderBy("timestamp", "desc")
-    );
-    const myWish = [];
-    const unsubscribe = () => {
-      onSnapshot(queries, (querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-          myWish.push(doc.data());
-        });
-      });
-      return myWish;
-    };
-    unsubscribe();
-    console.log(myWish);
-    const key = "myWish";
-    if (myWish.length >= 1) {
-      Cache.store(key, myWish);
-      return myWish;
-    }
-    const data = await Cache.get(key);
-    return data ? data : myWish;
-  } catch (error) {
-    throw Error(error);
-  }
-};
-
 const getUser = async (sellerRef) => {
   try {
     const userRef = doc(db, "users", sellerRef);
     const docSnap = await getDoc(userRef);
     const user = docSnap.data();
-    console.log(user, "user from");
     return user;
   } catch (error) {
     console.log(error);
   }
 };
-const getMessages = async () => {
-  const auth = getAuth();
-  try {
-    const messageRef = collection(db, "messages");
-    const queries = query(
-      messageRef,
-      where("senderID", "==", auth.currentUser.uid)
-    );
-    const querySnap = await getDocs(queries);
-    const messages = [];
-    querySnap.forEach((doc) => {
-      return messages.push({
-        id: doc.id,
-        data: doc.data(),
-      });
-    });
-    const key = "messages";
-    if (messages.length >= 1) {
-      console.log(messages, "messages array");
-      Cache.store(key, messages);
-      return messages;
-    }
-    const data = await Cache.get(key);
-    return data ? data : messages;
-  } catch (error) {
-    throw Error(error);
-  }
-};
+
 const storeImage = async (image_url) => {
-  const auth = getAuth();
   return new Promise(async (resolve, reject) => {
-    const fileName = `${auth.currentUser.uid}-${uuid.v4()}-${image_url}`;
+    const fileName = `${auth}-${uuid.v4()}-${image_url}`;
     const storageRef = ref(getStorage(), "images/" + fileName);
     // const storageRef = ref(getStorage(), "image_name");
 
@@ -202,8 +141,7 @@ const storeImage = async (image_url) => {
 };
 
 const postListings = async (listings) => {
-  const auth = getAuth();
-  const userRef = auth.currentUser.uid;
+  const userRef = auth;
   try {
     const { imgurl } = listings;
     const images = await Promise.all(
@@ -228,7 +166,6 @@ const postListings = async (listings) => {
   }
 };
 const postWish = async (wish) => {
-  const auth = getAuth();
   const userRef = auth.currentUser.uid;
   try {
     const formData = {
@@ -236,7 +173,7 @@ const postWish = async (wish) => {
       timestamp: serverTimestamp(),
       wishRef: userRef,
     };
-    const docRef = await addDoc(collection(db, "wishes"), formData);
+    const docRef = await addDoc(collection(db, "wishlists"), formData);
   } catch (error) {
     throw Error(error);
   }
@@ -244,8 +181,6 @@ const postWish = async (wish) => {
 export default {
   fetchListings,
   fetchMyListings,
-  fetchWishList,
-  getMessages,
   getUser,
   postListings,
   postWish,

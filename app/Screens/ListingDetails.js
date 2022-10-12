@@ -115,6 +115,7 @@ const styles = StyleSheet.create({
   txt: {
     fontWeight: "bold",
     fontSize: 20,
+    fontFamily: "nunito-bold",
   },
 
   currentImg: {
@@ -132,11 +133,13 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   productName: {
+    fontFamily: "nunito-bold",
     fontSize: 19,
     paddingBottom: 8,
     fontWeight: "bold",
   },
   productPrice: {
+    fontFamily: "nunito-bold",
     fontSize: 18,
     color: Colors.secondary,
     fontWeight: "700",
@@ -154,10 +157,6 @@ const styles = StyleSheet.create({
   listings: {
     overflow: "",
     flex: 1,
-    // height: "100%",
-    // backgroundColor: "#f8f4f4",
-    // paddingHorizontal: 20,
-    // paddingBottom: 60,
   },
 });
 
