@@ -62,27 +62,37 @@ function ListingDetails({ route, navigation }) {
         </View>
 
         {seller && auth.currentUser.uid !== listing.sellerRef ? (
-          <ListItem
-            chevron={false}
-            title={seller.name}
-            imgURL={seller.imgurl}
-            chatBtn={true}
-            chatSeller={() =>
-              navigation.navigate("Chats", {
-                screen: "Chat",
-                params: {
-                  name: seller.name,
-                  imgurl: seller.imgurl,
-                  ref: listing.sellerRef,
-                },
-              })
-            }
-            subtitle={
-              others.length <= 1
-                ? "Product Owner"
-                : others.length + " " + "Listings"
-            }
-          />
+          <>
+            <ListItem
+              chevron={false}
+              title={seller.name}
+              imgURL={seller.imgurl}
+              chatBtn={true}
+              chatSeller={() =>
+                navigation.navigate("Chats", {
+                  screen: "Chat",
+                  params: {
+                    name: seller.name,
+                    imgurl: seller.imgurl,
+                    ref: listing.sellerRef,
+                  },
+                })
+              }
+              subtitle={
+                others.length <= 1
+                  ? "Product Owner"
+                  : others.length + " " + "Listings"
+              }
+            />
+            <View style={styles.tips}>
+              <Text style={styles.txt}>Safety Tips</Text>
+              <View style={styles.safety}>
+                <Text style={styles.txtSmall}>Safety Tips</Text>
+                <Text style={styles.txtSmall}>Safety Tips</Text>
+                <Text style={styles.txtSmall}>Safety Tips</Text>
+              </View>
+            </View>
+          </>
         ) : (
           auth.currentUser.uid === listing.sellerRef && (
             <View style={styles.owner}>
@@ -101,9 +111,27 @@ function ListingDetails({ route, navigation }) {
 }
 
 const styles = StyleSheet.create({
+  safety: {
+    alignSelf: "flex-start",
+  },
+  tips: {
+    width: "80%",
+    padding: 15,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: Colors.light,
+    marginRight: "auto",
+    marginLeft: "auto",
+    borderRadius: 15,
+    marginBottom: 10,
+  },
+  txtSmall: {
+    color: "blue",
+  },
   owner: {
     width: "80%",
-    height: 50,
+    // height: 50,
+    padding: 15,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
@@ -111,6 +139,7 @@ const styles = StyleSheet.create({
     marginRight: "auto",
     marginLeft: "auto",
     borderRadius: 15,
+    marginBottom: 10,
   },
   txt: {
     fontWeight: "bold",

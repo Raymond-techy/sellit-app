@@ -3,9 +3,9 @@ import {
   StyleSheet,
   TouchableHighlight,
   TouchableOpacity,
-  TouchableWithoutFeedback,
   View,
   KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import React, { useRef, useState, useEffect } from "react";
 import moment from "moment";
@@ -17,7 +17,6 @@ import { Octicons } from "@expo/vector-icons";
 import AppTextInput from "../Components/AppTextInput";
 import { getAuth } from "firebase/auth";
 import {
-  arrayRemove,
   arrayUnion,
   doc,
   getDoc,
@@ -123,22 +122,24 @@ export default function ChatScreen() {
           scroll.current.scrollToEnd({ animated: true })
         }
       >
-        <KeyboardAvoidingView behavior="padding">
-          {chats.map((chat) => (
-            <View key={uuid.v4()}>
-              <TouchableOpacity>
-                <Message
-                  style={
-                    auth.currentUser.uid === chat.senderId
-                      ? styles.sent
-                      : styles.received
-                  }
-                  text={chat.message}
-                />
-              </TouchableOpacity>
-            </View>
-          ))}
-        </KeyboardAvoidingView>
+        {chats.map((chat) => (
+          <KeyboardAvoidingView
+            key={uuid.v4()}
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            style={{ flex: 1 }}
+          >
+            <TouchableOpacity>
+              <Message
+                style={
+                  auth.currentUser.uid === chat.senderId
+                    ? styles.sent
+                    : styles.received
+                }
+                text={chat.message}
+              />
+            </TouchableOpacity>
+          </KeyboardAvoidingView>
+        ))}
       </ScrollView>
       <View style={styles.message}>
         <AppTextInput
@@ -184,7 +185,8 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     marginTop: 90,
-    marginBottom: 50,
+    marginBottom: 60,
+    // paddingBottom: 60,
     zIndex: 1,
     paddingHorizontal: 15,
   },

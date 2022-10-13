@@ -2,6 +2,10 @@ import React, { useEffect, useState } from "react";
 import { RefreshControl, View, StyleSheet, ScrollView } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import uuid from "react-native-uuid";
+import Container, { Toast } from "toastify-react-native";
+import { collection, getDocs, limit, query, where } from "firebase/firestore";
+import { db } from "../../firebase.config";
+import { getAuth } from "firebase/auth";
 
 import ActivityIndicator from "../Components/ActivityIndicator";
 import Card from "../Components/Card";
@@ -13,10 +17,6 @@ import Colors from "../config/Colors";
 import { Paginate } from "../Components/Hooks/Paginate";
 import Pagination from "../Components/Pagination";
 import AppTextInput from "../Components/AppTextInput";
-import Container, { Toast } from "toastify-react-native";
-import { collection, getDocs, limit, query, where } from "firebase/firestore";
-import { db } from "../../firebase.config";
-import { getAuth } from "firebase/auth";
 
 function Listings() {
   const auth = getAuth();
@@ -62,8 +62,14 @@ function Listings() {
     setListings(listingPag);
   };
   const handleWish = async (wish) => {
+    const auth = getAuth();
     const itemRef = collection(db, "wishlists");
-    const queries = query(itemRef, where("id", "==", wish.id), limit(1));
+    const queries = query(
+      itemRef,
+      where("wishRef", "==", auth.currentUser.uid),
+      where("id", "==", wish.id),
+      limit(1)
+    );
     const querySnap = await getDocs(queries);
     if (querySnap.empty) {
       try {

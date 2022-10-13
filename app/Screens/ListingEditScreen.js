@@ -86,7 +86,7 @@ export default function ListingEditScreen() {
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
   const [complete, setComplete] = useState(false);
-  const handleSubmit = async (listing, { resetForm }) => {
+  const handleSubmit = async (listing) => {
     setLoading(true);
     await listingsApi.postListings(listing).catch((err) => {
       setError(true);
@@ -98,7 +98,6 @@ export default function ListingEditScreen() {
     setTimeout(() => {
       setComplete(false);
     }, 3000);
-    resetForm();
     navigation.navigate("Home");
   };
 

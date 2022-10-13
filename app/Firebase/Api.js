@@ -10,7 +10,6 @@ import {
   query,
   serverTimestamp,
   where,
-  onSnapshot,
 } from "firebase/firestore";
 
 import {
@@ -44,7 +43,7 @@ const fetchListings = async () => {
     const data = await Cache.get(key);
     return data ? data : listings;
   } catch (error) {
-    throw Error(error);
+    throw Error(error, "error occured");
   }
 };
 const fetchMyListings = async (refIden = auth.currentUser.uid) => {

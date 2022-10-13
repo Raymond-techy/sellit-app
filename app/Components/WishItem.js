@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 80,
     backgroundColor: Colors.white,
-    elevation: 20,
+    elevation: 8,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-evenly",

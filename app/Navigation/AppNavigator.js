@@ -30,7 +30,6 @@ function AppNavigator() {
         name="wishlist"
         component={WishList}
         options={{
-          headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons
               name="heart-multiple-outline"

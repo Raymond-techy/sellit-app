@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
     paddingBottom: 25,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: Colors.primary,
+    backgroundColor: Colors.danger,
     height: 50,
     top: Constants.statusBarHeight,
     width: "100%",
