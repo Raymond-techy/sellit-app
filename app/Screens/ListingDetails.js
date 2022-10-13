@@ -68,7 +68,7 @@ function ListingDetails({ route, navigation }) {
             imgURL={seller.imgurl}
             chatBtn={true}
             chatSeller={() =>
-              navigation.navigate("messaging", {
+              navigation.navigate("Chats", {
                 screen: "Chat",
                 params: {
                   name: seller.name,

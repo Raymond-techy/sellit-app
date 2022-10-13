@@ -1,4 +1,3 @@
-import React from "react";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import {
   StyleSheet,
@@ -41,7 +40,7 @@ function Card({
             <MaterialCommunityIcons
               name="heart-circle-outline"
               size={30}
-              color={Colors.primary}
+              color="rgb(238, 75, 43)"
             />
           </TouchableHighlight>
         )}

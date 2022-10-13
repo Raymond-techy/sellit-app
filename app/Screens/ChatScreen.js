@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   View,
+  KeyboardAvoidingView,
 } from "react-native";
 import React, { useRef, useState, useEffect } from "react";
 import moment from "moment";
@@ -122,20 +123,22 @@ export default function ChatScreen() {
           scroll.current.scrollToEnd({ animated: true })
         }
       >
-        {chats.map((chat) => (
-          <View key={uuid.v4()}>
-            <TouchableOpacity>
-              <Message
-                style={
-                  auth.currentUser.uid === chat.senderId
-                    ? styles.sent
-                    : styles.received
-                }
-                text={chat.message}
-              />
-            </TouchableOpacity>
-          </View>
-        ))}
+        <KeyboardAvoidingView behavior="padding">
+          {chats.map((chat) => (
+            <View key={uuid.v4()}>
+              <TouchableOpacity>
+                <Message
+                  style={
+                    auth.currentUser.uid === chat.senderId
+                      ? styles.sent
+                      : styles.received
+                  }
+                  text={chat.message}
+                />
+              </TouchableOpacity>
+            </View>
+          ))}
+        </KeyboardAvoidingView>
       </ScrollView>
       <View style={styles.message}>
         <AppTextInput

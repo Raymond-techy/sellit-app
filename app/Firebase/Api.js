@@ -134,7 +134,7 @@ const storeImage = async (image_url) => {
 };
 
 const postListings = async (listings) => {
-  const userRef = auth;
+  const userRef = auth.currentUser.uid;
   try {
     const { imgurl } = listings;
     const images = await Promise.all(

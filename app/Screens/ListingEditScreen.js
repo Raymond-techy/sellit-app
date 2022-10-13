@@ -97,7 +97,7 @@ export default function ListingEditScreen() {
     setComplete(true);
     setTimeout(() => {
       setComplete(false);
-    }, 2000);
+    }, 3000);
     resetForm();
     navigation.navigate("Home");
   };
