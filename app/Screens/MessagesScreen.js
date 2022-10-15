@@ -1,13 +1,22 @@
 import { getAuth } from "firebase/auth";
-import { collection, onSnapshot, query, where } from "firebase/firestore";
+import {
+  collection,
+  deleteDoc,
+  doc,
+  onSnapshot,
+  query,
+  where,
+} from "firebase/firestore";
 import React, { useEffect, useState } from "react";
-import { Text, StyleSheet, ScrollView, View } from "react-native";
+import { Text, StyleSheet, ScrollView, View, Alert } from "react-native";
 import { db } from "../../firebase.config";
 import ListItem from "../Components/ListItem";
 import ListItemDeleteAction from "../Components/ListItemDeleteAction";
 import Screen from "../Components/Screen";
 import uuid from "react-native-uuid";
 import { useIsFocused } from "@react-navigation/native";
+import Skeleton from "../Components/skeleton";
+import Colors from "../config/Colors";
 
 function MessagesScreen({ navigation }) {
   const [messages, setMessages] = useState([]);
@@ -29,6 +38,7 @@ function MessagesScreen({ navigation }) {
               sender: doc.data().senderDetails,
               lastMessage: doc.data().lastMessage,
               date: doc.data().timestamp,
+              id: doc.id,
             });
           });
           setSent(messages);
@@ -43,6 +53,7 @@ function MessagesScreen({ navigation }) {
               sender: doc.data().senderDetails,
               lastMessage: doc.data().lastMessage,
               date: doc.data().timestamp,
+              id: doc.id,
             });
           });
           setReceived(messages);
@@ -55,20 +66,32 @@ function MessagesScreen({ navigation }) {
     getChat();
   }, [focus]);
 
-  const [refresh, setRefresh] = useState(false);
-  const handleDeleteMsg = (itemID) => {
-    setRefresh(true);
-    const newMessages = messages.filter((message) => message.id !== itemID);
-    setMessages(newMessages);
-    setTimeout(() => {
-      setRefresh(false);
-    }, 2000);
+  const twoButtonAlert = (itemId) => {
+    Alert.alert(
+      "Delete conversation",
+      "Are you sure to delete this conversation",
+      [
+        {
+          text: "Yes",
+          onPress: () => handleDeleteMsg(itemId),
+        },
+        {
+          text: "No",
+        },
+      ]
+    );
   };
+  const handleDeleteMsg = async (msgID) => {
+    await deleteDoc(doc(db, "messages", msgID));
+    const updatedMsgs = messages.filter((message) => message.id !== msgID);
+    setMessages(updatedMsgs);
+  };
+
   return (
     <>
       <Screen>
         {messages.length >= 1 ? (
-          <ScrollView>
+          <ScrollView style={styles.chatt}>
             {messages
               .sort((a, b) => b.date - a.date)
               .map((message) => (
@@ -90,7 +113,7 @@ function MessagesScreen({ navigation }) {
                       }
                       renderRightActions={() => (
                         <ListItemDeleteAction
-                          handlePress={() => handleDeleteMsg(item.id)}
+                          handlePress={() => twoButtonAlert(message.id)}
                         />
                       )}
                       chevron={false}
@@ -114,7 +137,7 @@ function MessagesScreen({ navigation }) {
                         chevron={false}
                         renderRightActions={() => (
                           <ListItemDeleteAction
-                            handlePress={() => handleDeleteMsg(item.id)}
+                            handlePress={() => twoButtonAlert(message.id)}
                           />
                         )}
                       />
@@ -125,10 +148,7 @@ function MessagesScreen({ navigation }) {
           </ScrollView>
         ) : (
           <View style={styles.noChat}>
-            <Text style={styles.txt}>
-              You Currently Have No messages at The Moment Chat a seller to Get
-              Started!
-            </Text>
+            <Skeleton />
           </View>
         )}
       </Screen>
@@ -137,6 +157,11 @@ function MessagesScreen({ navigation }) {
 }
 const styles = StyleSheet.create({
   noChat: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  Chatt: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",

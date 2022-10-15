@@ -5,6 +5,7 @@ import * as Notifications from "expo-notifications";
 import * as Device from "expo-device";
 import { Formik } from "formik";
 import * as Yup from "yup";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import SubmitButton from "../Components/SubmitButton";
 import Screen from "../Components/Screen";
@@ -14,6 +15,7 @@ import ImageFormPicker from "../Components/ImageFormPicker";
 import Container, { Toast } from "toastify-react-native";
 import ActivityIndicator from "../Components/ActivityIndicator";
 import AuthContext from "../Context/AuthContext";
+import Colors from "../config/Colors";
 
 const validationSchema = Yup.object().shape({
   email: Yup.string().email().required().label("Email"),
@@ -33,6 +35,7 @@ export default function RegisterScreen() {
   const navigation = useNavigation();
   const { setUser } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
+  const [visible, setVisible] = useState(false);
   const [expoPushToken, setExpoPushToken] = useState("");
   const [notification, setNotification] = useState(false);
   const notificationListener = useRef();
@@ -91,11 +94,11 @@ export default function RegisterScreen() {
     return token;
   }
 
-  async function schedulePushNotification() {
+  async function schedulePushNotification(message, subTitle) {
     await Notifications.scheduleNotificationAsync({
       content: {
-        title: "Registeration Successful",
-        body: "Your account has been sucessfully Registered",
+        title: message,
+        body: subTitle,
         data: { data: "goes here" },
       },
       trigger: { seconds: 2 },
@@ -104,21 +107,29 @@ export default function RegisterScreen() {
 
   const handleSubmit = async (values) => {
     setLoading(true);
-    const formData = {
-      ...values,
-      token: expoPushToken,
-    };
-    const user = await AuthApi.createUser(formData).catch((err) => {
+
+    try {
+      const formData = {
+        ...values,
+        token: expoPushToken,
+      };
+      const user = await AuthApi.createUser(formData);
+      setLoading(false);
+      setUser(user);
+      await schedulePushNotification(
+        "Registeration Successful",
+        "Your account has been sucessfully Registered"
+      );
+    } catch (err) {
       setLoading(false);
       if (err === "auth/email-already-in-use") {
+        setLoading(false);
         Toast.error("email already exist");
+        return;
       }
       Toast.error("Error with information upload");
       return;
-    });
-    setLoading(false);
-    setUser(user);
-    await schedulePushNotification();
+    }
   };
   const handleLogin = () => {
     navigation.navigate("login");
@@ -157,14 +168,25 @@ export default function RegisterScreen() {
                 autoCapitalize="none"
                 placeholder="Email"
               />
-              <AppFormFIeld
-                name="password"
-                secureTextEntry
-                iconName="lock"
-                autoCorrect={false}
-                autoCapitalize="none"
-                placeholder="Password"
-              />
+              <View>
+                <MaterialCommunityIcons
+                  name={!visible ? "eye" : "eye-off"}
+                  color={Colors.medium}
+                  size={30}
+                  style={styles.passEye}
+                  onPress={() => setVisible((prevState) => !prevState)}
+                />
+                <AppFormFIeld
+                  // keyboardType=""
+                  spellCheck={false}
+                  name="password"
+                  secureTextEntry={!visible}
+                  iconName="lock"
+                  autoCorrect={false}
+                  autoCapitalize="none"
+                  placeholder="Password"
+                />
+              </View>
               <ImageFormPicker name="imgurl" />
               <Text>Upload Profile Pic</Text>
               <SubmitButton title="Register" />
@@ -191,6 +213,13 @@ const styles = StyleSheet.create({
   login: {
     textAlign: "center",
     color: "dodgerblue",
-    fontFamily: "nunito-regular",
+    fontFamily: "nunito-bold",
+    paddingVertical: 10,
+  },
+  passEye: {
+    position: "absolute",
+    right: 10,
+    zIndex: 10,
+    top: 17,
   },
 });

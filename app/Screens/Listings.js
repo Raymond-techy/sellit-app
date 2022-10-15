@@ -1,23 +1,69 @@
 import React, { useEffect, useState } from "react";
-import { RefreshControl, View, StyleSheet, ScrollView } from "react-native";
+import {
+  RefreshControl,
+  View,
+  StyleSheet,
+  ScrollView,
+  Text,
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import uuid from "react-native-uuid";
-import Container, { Toast } from "toastify-react-native";
-import { collection, getDocs, limit, query, where } from "firebase/firestore";
-import { db } from "../../firebase.config";
-import { getAuth } from "firebase/auth";
 
 import ActivityIndicator from "../Components/ActivityIndicator";
 import Card from "../Components/Card";
 import Screen from "../Components/Screen";
 
+import Container, { Toast } from "toastify-react-native";
+import { collection, getDocs, limit, query, where } from "firebase/firestore";
+import { db } from "../../firebase.config";
+import { getAuth } from "firebase/auth";
 import listingApi from "../Firebase/Api";
 import AppButton from "../Components/AppButton";
 import Colors from "../config/Colors";
 import { Paginate } from "../Components/Hooks/Paginate";
 import Pagination from "../Components/Pagination";
 import AppTextInput from "../Components/AppTextInput";
+import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 
+const categories = [
+  {
+    label: "All",
+    value: 0,
+  },
+  {
+    label: "Furniture",
+    value: 1,
+  },
+  {
+    label: "Cars",
+    value: 2,
+  },
+  {
+    label: "Games",
+    value: 4,
+  },
+  {
+    label: "Sports",
+    value: 6,
+  },
+  {
+    label: "Clothing",
+    value: 5,
+  },
+
+  {
+    label: "Movies & Music",
+    value: 7,
+  },
+  {
+    label: "Cameras",
+    value: 3,
+  },
+  {
+    label: "Books",
+    value: 8,
+  },
+];
 function Listings() {
   const auth = getAuth();
   const navigation = useNavigation();
@@ -29,6 +75,7 @@ function Listings() {
   const [refresh, setRefresh] = useState(false);
   const [listingError, setListingError] = useState(false);
   const [searchQuery, setSearchQuery] = useState(null);
+  const [selectedCatg, setSelectedCatg] = useState("All");
   const pageSize = 5;
   useEffect(() => {
     loadListings();
@@ -78,10 +125,20 @@ function Listings() {
       } catch (error) {
         Toast.error("An error occured while adding item");
       }
-      return;
     } else {
       Toast.warn("Item already exist in wishLists");
     }
+  };
+  const handleCatgSelect = (label) => {
+    setSelectedCatg(label);
+    const pagData =
+      label === "All"
+        ? pagListings
+        : pagListings.filter(
+            (pag) =>
+              pag.data.category.label.toLowerCase() === label.toLowerCase()
+          );
+    setListings(pagData);
   };
   const queryListing = searchQuery
     ? pagListings.filter((pag) =>
@@ -98,6 +155,34 @@ function Listings() {
         </View>
       )}
       <ActivityIndicator visible={loading} />
+      <View>
+        <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+          {categories.map((item) => (
+            <TouchableWithoutFeedback
+              key={item.value}
+              onPress={() => handleCatgSelect(item.label)}
+            >
+              <View
+                style={
+                  selectedCatg === item.label
+                    ? styles.selectedCateg
+                    : styles.categ
+                }
+              >
+                <Text
+                  style={{
+                    fontFamily: "nunito-regular",
+                    fontWeight: "900",
+                    color: selectedCatg === item.label ? "#fff" : "#000",
+                  }}
+                >
+                  {item.label}
+                </Text>
+              </View>
+            </TouchableWithoutFeedback>
+          ))}
+        </ScrollView>
+      </View>
       <AppTextInput
         placeholder="Search product"
         style={styles.style}
@@ -159,11 +244,36 @@ const styles = StyleSheet.create({
     fontFamily: "nunito-bold",
   },
   style: {
+    marginTop: -4,
     marginRight: "auto",
     marginLeft: "auto",
     width: "90%",
     height: 35,
-    borderColor: Colors.medium,
+    borderColor: Colors.secondary,
+  },
+  categ: {
+    height: 30,
+    backgroundColor: Colors.light,
+    margin: 10,
+    paddingHorizontal: 15,
+    marginBottom: 20,
+    borderRadius: 35,
+    borderWidth: 1,
+    borderColor: Colors.secondary,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  selectedCateg: {
+    height: 30,
+    backgroundColor: Colors.primary,
+    margin: 10,
+    paddingHorizontal: 15,
+    marginBottom: 20,
+    borderRadius: 35,
+    borderWidth: 1,
+    borderColor: Colors.secondary,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
 export default Listings;

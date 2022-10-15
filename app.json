@@ -18,12 +18,15 @@
           "icon": "./app/assets/SellIT.png",
           "color": "#ffffff"
         }
-      ]
+      ],
+      "expo-build-properties"
     ],
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true
     },

@@ -11,10 +11,12 @@ import React, { useRef, useState, useEffect } from "react";
 import moment from "moment";
 import Screen from "../Components/Screen";
 import ListItem from "../Components/ListItem";
+import Message from "../Components/Message";
 import Colors from "../config/Colors";
+import AppTextInput from "../Components/AppTextInput";
+
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { Octicons } from "@expo/vector-icons";
-import AppTextInput from "../Components/AppTextInput";
 import { getAuth } from "firebase/auth";
 import {
   arrayUnion,
@@ -27,7 +29,7 @@ import {
 } from "firebase/firestore";
 import uuid from "react-native-uuid";
 import { db } from "../../firebase.config";
-import Message from "../Components/Message";
+
 export default function ChatScreen() {
   const navigation = useNavigation();
   const route = useRoute();

@@ -1,9 +1,11 @@
-import { View, StyleSheet, FlatList } from "react-native";
+import { View, StyleSheet, FlatList, Alert } from "react-native";
 import React, { useState, useEffect } from "react";
 import Screen from "../Components/Screen";
 import { db } from "../../firebase.config";
 import {
   collection,
+  deleteDoc,
+  doc,
   onSnapshot,
   orderBy,
   query,
@@ -12,8 +14,11 @@ import {
 import listingApi from "../Firebase/Api";
 
 import { getAuth } from "firebase/auth";
-import WishItem from "../Components/WishItem";
 import { useIsFocused } from "@react-navigation/native";
+import ListItem from "../Components/ListItem";
+import ListItmSep from "../Components/ListItmSep";
+import ListItemDeleteAction from "../Components/ListItemDeleteAction";
+import Skeleton from "../Components/skeleton";
 
 export default function WishList({ navigation }) {
   const [wishList, setWishList] = useState([]);
@@ -32,7 +37,7 @@ export default function WishList({ navigation }) {
       onSnapshot(queries, (querySnapshot) => {
         const myWish = [];
         querySnapshot.forEach((doc) => {
-          myWish.push(doc.data());
+          myWish.push({ ...doc.data(), id: doc.id });
         });
         setWishList(myWish);
       });
@@ -50,23 +55,54 @@ export default function WishList({ navigation }) {
       },
     });
   };
+
+  const twoButtonAlert = (itemId) => {
+    Alert.alert("Delete item", "Are you sure to delete this wish Item", [
+      {
+        text: "Yes",
+        onPress: () => handleDeleteWish(itemId),
+      },
+      {
+        text: "No",
+      },
+    ]);
+  };
+  const handleDeleteWish = async (wishID) => {
+    await deleteDoc(doc(db, "wishlists", wishID));
+    const updatedWish = wishList.filter((wish) => wish.id !== wishID);
+    setWishList(updatedWish);
+  };
   return (
     <Screen>
-      <View style={styles.wishList}>
-        <FlatList
-          showsVerticalScrollIndicator={false}
-          data={wishList}
-          keyExtractor={(item) => (item.id + random).toString()}
-          renderItem={({ item: { id, data } }) => (
-            <WishItem
-              title={data.title}
-              subTitle={"$" + data.price.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-              image={data.images[0]}
-              handleChat={() => chatSeller(data.sellerRef)}
-            />
-          )}
-        />
-      </View>
+      {wishList.length >= 1 ? (
+        <View style={styles.wishList}>
+          <FlatList
+            showsVerticalScrollIndicator={false}
+            data={wishList}
+            keyExtractor={(item) => (item.id + random).toString()}
+            ItemSeparatorComponent={() => <ListItmSep />}
+            renderItem={({ item }) => (
+              <ListItem
+                chevron={false}
+                title={item.data.title}
+                imgURL={item.data.images[0]}
+                chatBtn={true}
+                chatSeller={() => chatSeller(item.data.sellerRef)}
+                subtitle={
+                  "$" + item.data.price.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                }
+                renderRightActions={() => (
+                  <ListItemDeleteAction
+                    handlePress={() => twoButtonAlert(item.id)}
+                  />
+                )}
+              />
+            )}
+          />
+        </View>
+      ) : (
+        <Skeleton />
+      )}
     </Screen>
   );
 }
@@ -74,8 +110,8 @@ export default function WishList({ navigation }) {
 const styles = StyleSheet.create({
   wishList: {
     // overflow: "hidden",
-    flex: 1,
-    alignItems: "center",
-    padding: 20,
+    // flex: 1,
+    // alignItems: "center",
+    // padding: 20,
   },
 });

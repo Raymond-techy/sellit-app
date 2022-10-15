@@ -10,7 +10,6 @@ import ListingEditScreen from "../Screens/ListingEditScreen";
 import NewListingButton from "./NewListingButton";
 import MessageNavigator from "./MessageNavigator";
 import WishList from "../Screens/WishList";
-
 function AppNavigator() {
   const Tab = createBottomTabNavigator();
   return (
@@ -64,7 +63,7 @@ function AppNavigator() {
           headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons
-              name="android-messages"
+              name="chat-processing"
               color={color}
               size={size}
             />

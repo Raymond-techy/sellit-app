@@ -12,7 +12,11 @@ function WelcomeScreen() {
       source={require("../assets/background.jpg")}
     >
       <View style={styles.logoContainer}>
-        <Image source={require("../assets/SellIT.png")} style={styles.logo} />
+        <Image
+          source={require("../assets/Picture73.png")}
+          style={styles.logo}
+          resizeMode="contain"
+        />
       </View>
       <View style={styles.btn}>
         <AppButton

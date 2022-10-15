@@ -101,16 +101,20 @@ export default function ListingEditScreen() {
     navigation.navigate("Home");
   };
 
+  if (complete)
+    return (
+      <ActivityIndicator
+        visible={complete}
+        source={require("../assets/animations/done.json")}
+      />
+    );
   return (
     <Screen>
       <ActivityIndicator
         visible={loading}
         source={require("../assets/animations/loader.json")}
       />
-      <ActivityIndicator
-        visible={complete}
-        source={require("../assets/animations/done.json")}
-      />
+
       <ErrorModal visible={Error} closeModal={() => setError(false)} />
       <View style={styles.container}>
         <ScrollView showsVerticalScrollIndicator={false}>

@@ -166,6 +166,7 @@ const postWish = async (wish) => {
     };
     const docRef = await addDoc(collection(db, "wishlists"), formData);
   } catch (error) {
+    console.log(error);
     throw Error(error);
   }
 };
